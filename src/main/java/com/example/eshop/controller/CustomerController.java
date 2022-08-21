@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -52,5 +53,13 @@ public class CustomerController {
     @ExceptionHandler(CustomerNotFoundException.class)
     private ResponseEntity<String> customerNotFoundException(CustomerNotFoundException ex) {
         return new ResponseEntity(ex.getMessage(),NOT_FOUND);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    private ResponseEntity<String> validationException(ConstraintViolationException ex) {
+        return new ResponseEntity(ex.getMessage(), BAD_REQUEST);
+    }
+    @ExceptionHandler(RuntimeException.class)
+    private ResponseEntity<String> runtimeException(RuntimeException ex){
+        return new ResponseEntity(ex.getMessage(), BAD_REQUEST);
     }
 }

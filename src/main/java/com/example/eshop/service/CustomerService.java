@@ -33,6 +33,10 @@ public class CustomerService {
         if(customerRepo.findByEmail(c1.getEmail()).isPresent()){
             throw new CustomerAlreadyExistsException("Customer already exists!");
         }
+        if(c1.getPassword().isEmpty()){
+            throw new RuntimeException("Password cannot be empty");
+        }
+        c1.setPassword(bCryptPasswordEncoder.encode(c1.getPassword()));
         customerRepo.save(c1);
 
         if(!c1.getAddresses().isEmpty()){
@@ -47,7 +51,6 @@ public class CustomerService {
                 account.setCustomerId(c1.getCustomerId())
             );
             accountRepo.saveAll(c1.getAccounts());
-
         }
 
         return customerToDto(c1);

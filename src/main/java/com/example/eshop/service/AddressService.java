@@ -21,6 +21,7 @@ public class AddressService {
         addressRepo.findAll().forEach(
                 address -> {
                     addressDtos.add(addressToAddressDto(address));
+                    Integer inte = addressDtos.size();
                 }
         );
         return addressDtos;
@@ -70,6 +71,7 @@ public class AddressService {
 
     public AddressDto addressToAddressDto(Address address){
         AddressDto addressDto = new AddressDto();
+        addressDto.setAddressId(address.getAddressId());
         addressDto.setAddress1(address.getAddress1());
         addressDto.setAddress2(address.getAddress2());
         addressDto.setCity(address.getCity());

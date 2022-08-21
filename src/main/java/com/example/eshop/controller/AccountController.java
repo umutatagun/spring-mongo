@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -51,11 +52,15 @@ public class AccountController {
     }
 
     @ExceptionHandler(AccountAlreadyExistsException.class)
-    private ResponseEntity<String> accountAlreadExistsException(String msg){
-        return new ResponseEntity(msg,BAD_REQUEST);
+    private ResponseEntity<String> accountAlreadExistsException(AccountAlreadyExistsException ex){
+        return new ResponseEntity(ex.getMessage() ,BAD_REQUEST);
     }
     @ExceptionHandler(AccountNotFoundException.class)
-    private ResponseEntity<String> accountNotFoundException(String msg){
-        return new ResponseEntity(msg,BAD_REQUEST);
+    private ResponseEntity<String> accountNotFoundException(AccountNotFoundException ex){
+        return new ResponseEntity(ex.getMessage(), BAD_REQUEST);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    private ResponseEntity<String> validationException(ConstraintViolationException ex) {
+        return new ResponseEntity(ex.getMessage(), BAD_REQUEST);
     }
 }

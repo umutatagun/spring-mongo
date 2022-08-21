@@ -7,22 +7,29 @@ import com.example.eshop.model.Employee;
 import com.example.eshop.repository.CustomerRepo;
 import com.example.eshop.repository.EmployeeRepo;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.security.SecureRandom;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class EmployeeService {
     private final EmployeeRepo employeeRepo;
     private final CustomerRepo customerRepo;
+    private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10,new SecureRandom());
 
-    public List<Employee> getAllEmployees() {
-        return employeeRepo.findAll();
+    public List<EmployeeDto> getAllEmployees() {
+        List<Employee> employeeList = employeeRepo.findAll();
+        return employeeList.stream()
+                .map((employee -> employeeToDto(employee)))
+                .collect(Collectors.toList());
     }
 
     public EmployeeDto getEmployeeById(String employeeId) {
@@ -34,6 +41,9 @@ public class EmployeeService {
         String checkMail = e1.getEmail();
         if(employeeRepo.findByEmail(checkMail).isPresent()){
             throw new EmployeeAlreadyExistsException("Employee Already Exists!");
+        }
+        if(e1.getPassword() == null){
+            throw new RuntimeException("Password cannot be empty");
         }
         e1.setPassword(bCryptPasswordEncoder.encode(e1.getPassword()));
         employeeRepo.save(e1);
@@ -58,7 +68,9 @@ public class EmployeeService {
         employee.setPoint(e1.getPoint());
         employee.setEmail(e1.getEmail());
         employee.setCustomers(e1.getCustomers());
-        employee.setPassword(bCryptPasswordEncoder.encode(e1.getPassword()));
+        if(!e1.getPassword().isEmpty()){
+            employee.setPassword(bCryptPasswordEncoder.encode(e1.getPassword()));
+        }
         employee.setLastModifiedDate(new Date());
         employeeRepo.save(employee);
 
@@ -71,13 +83,7 @@ public class EmployeeService {
     }
 
     public EmployeeDto employeeToDto(Employee employee) {
-        EmployeeDto employeeDto = new EmployeeDto();
-
-        employeeDto.setEmployeeId(employee.getEmployeeId());
-        employeeDto.setEmployeeSurname(employee.getEmployeeSurname());
-        employeeDto.setEmployeeName(employee.getEmployeeName());
-        employeeDto.setEmail(employee.getEmail());
-        employeeDto.setPoint(employee.getPoint());
+        EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
 
         return employeeDto;
     }
