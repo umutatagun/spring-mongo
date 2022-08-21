@@ -30,16 +30,6 @@ public class AddressService {
         return addressToAddressDto(findAddressById(id));
     }
 
-    public List<AddressDto> getAddressByCustomerId(String customerId) {
-        List<AddressDto> addressDtos = List.of();
-        addressRepo.findByCustomerId(customerId).forEach(
-                address -> {
-                    addressDtos.add(addressToAddressDto(address));
-                }
-        );
-        return addressDtos;
-    }
-
     public AddressDto addAddress(Address address) {
         if(addressRepo.findById(address.getAddressId()).isPresent()){
             throw new AddressAlreadyExistsException("Address already exists");

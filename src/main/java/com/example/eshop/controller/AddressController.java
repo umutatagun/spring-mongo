@@ -29,11 +29,6 @@ public class AddressController {
         return new ResponseEntity(addressService.getAddressById(id),OK);
     }
 
-    @GetMapping("/customer/{customerId}")
-    private ResponseEntity<List<AddressDto>> getAddressByCustomerId(@PathVariable String customerId) {
-        return new ResponseEntity(addressService.getAddressByCustomerId(customerId),OK);
-    }
-
     @PostMapping
     private ResponseEntity<AddressDto> addAddress(@RequestBody Address address) {
         return new ResponseEntity(addressService.addAddress(address),CREATED);

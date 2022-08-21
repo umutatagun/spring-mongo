@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AccountRepo extends MongoRepository<Account, String> {
     List<Account> findAllByCustomerId(String customerId);
+    void deleteAllByCustomerId(String customerId);
 }

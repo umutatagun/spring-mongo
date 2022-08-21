@@ -6,10 +6,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class BaseEntityDto {
+public class BaseEntityDto implements Serializable {
     @CreatedBy
     private String createdBy;
     @CreatedDate

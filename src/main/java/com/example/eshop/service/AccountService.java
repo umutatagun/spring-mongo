@@ -1,5 +1,7 @@
 package com.example.eshop.service;
 
+import com.example.eshop.exception.AccountAlreadyExistsException;
+import com.example.eshop.exception.AccountNotFoundException;
 import com.example.eshop.model.Account;
 import com.example.eshop.model.dto.AccountDto;
 import com.example.eshop.repository.AccountRepo;
@@ -24,7 +26,45 @@ public class AccountService {
         return accountDtos;
     }
 
+    public AccountDto getAccountById(String id) {
+        return accountToAccountDto(findByAccountId(id));
+    }
 
+    public AccountDto addAccount(Account account) {
+        if(accountRepo.findById(account.getAccountId()).isPresent()){
+            throw new AccountAlreadyExistsException("Account already exists with id "+account.getAccountId());
+        }
+        accountRepo.save(account);
+        return accountToAccountDto(account);
+    }
+
+    public AccountDto updateAccount(String id, Account account) {
+        Account ac = findByAccountId(id);
+        ac.setCustomerId(account.getCustomerId());
+        ac.setIsBlocked(account.getIsBlocked());
+        ac.setTotalAmount(account.getTotalAmount());
+        ac.setLastModifiedDate(new Date());
+        ac.setLastModifiedBy(account.getLastModifiedBy());
+
+        accountRepo.save(ac);
+
+        return accountToAccountDto(ac);
+    }
+
+    public void deleteAccountById(String id){
+        Account account = findByAccountId(id);
+        accountRepo.delete(account);
+    }
+
+    public void deleteAccountsByCustomerId(String customerId) {
+        accountRepo.deleteAllByCustomerId(customerId);
+    }
+
+
+    private Account findByAccountId(String id)  {
+        return accountRepo.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found with id "+id));
+    }
 
     private AccountDto accountToAccountDto(Account account){
         AccountDto accountDto = new AccountDto();
